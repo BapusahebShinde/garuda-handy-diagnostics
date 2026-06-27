@@ -1,6 +1,7 @@
 package com.itek.rftaar.reader
 
 import android.bluetooth.BluetoothAdapter
+import android.os.SystemClock
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -12,6 +13,8 @@ import com.itek.rftaar.core.database.AppDatabase
 import com.itek.rftaar.core.database.DataStoreManager
 import com.itek.rftaar.data.entity.TagInfoEntity
 import com.itek.rftaar.data.model.TagTime
+import com.itek.rftaar.diagnostics.DiagnosticLogger
+import com.itek.rftaar.diagnostics.RfidDiagnosticTracker
 import com.itek.rftaar.mqtt.MqttManager
 import com.itek.rftaar.mqtt.MqttManager.publishInventory
 import com.itek.rftaar.mqtt.constants.SearchTypeConstant
@@ -646,7 +649,14 @@ abstract class RFIDHandler {
       //showLog("isMaxScanLimitReached0",""+isMaxScanLimitReached)
       if(isMaxScanLimitReached) return
       readTid = isUnencoded || isAlien || !isPublishToMqtt
-      val result= setupInventory(invPower = chkNull(invPower, getPower()), readTid)
+      val resolvedPower = chkNull(invPower, getPower())
+      RfidDiagnosticTracker.rfPowerDbm = resolvedPower.toString()
+      RfidDiagnosticTracker.inventorySession = sessionType
+      RfidDiagnosticTracker.inventoryTarget = transactionType
+      RfidDiagnosticTracker.readerConnected = isConnected()
+      RfidDiagnosticTracker.knownUnreadExpected = maxScanLimit
+      DiagnosticLogger.start(context)
+      val result= setupInventory(invPower = resolvedPower, readTid)
       showLog("setupInventory",""+result)
       isActionInventory = true
       setupTagBuffer()
@@ -664,9 +674,14 @@ abstract class RFIDHandler {
             isUpdateFound = isUpdateFound,
             maxScanLimit = maxScanLimit
         )*/
+        RfidDiagnosticTracker.inventoryRunning = true
         isInventoryOn.postValue(true)
       }
-      else showLog("startInventory",""+false)
+      else {
+        RfidDiagnosticTracker.onSdkError("startInventory_failed")
+        DiagnosticLogger.stop()
+        showLog("startInventory",""+false)
+      }
     //}
   }
 
@@ -885,6 +900,10 @@ abstract class RFIDHandler {
     showLog("method","stopOperations")
     showLog("isActionInventory_stopOperations", ""+isActionInventory)
     val wasInvAction=isActionInventory
+    if (wasInvAction) {
+      RfidDiagnosticTracker.inventoryRunning = false
+      DiagnosticLogger.stop()
+    }
     isActionInventory=false
     if(tagBuffer!=null){
         tagBuffer?.close()
@@ -1356,7 +1375,9 @@ abstract class RFIDHandler {
     if(!isScanningOn()) return
     if(topic.equals(TopicConstants.INVENTORY) && !isActionInventory) return
     if(topic.equals(TopicConstants.INVENTORY) && !chkTrue(isInventoryOn.value)) return
+    val callbackStartNanos = SystemClock.elapsedRealtimeNanos()
     val tagInfo: TagInfoEntity = getTagInfo(scanned)
+    RfidDiagnosticTracker.onCallback(tagInfo.epc, tagInfo.rssi, SystemClock.elapsedRealtimeNanos() - callbackStartNanos)
     showLog("epc1", tagInfo.epc)
     showLog("tid1", tagInfo.tid)
     val result = validateData(tagInfo.barcode, tagInfo.epc, tagInfo.tid, tagInfo.rssi,tagInfo.serial,tagInfo.isUnencodedTag(),tagInfo.isAlien())
@@ -1408,6 +1429,7 @@ abstract class RFIDHandler {
           showLog("epc3", tagInfo.epc)
           //inventoryEngine.onTagReceived(tagInfo)
           val result= tagBuffer?.trySend(enrichTag(tagInfo))
+          if(result?.isSuccess == true) RfidDiagnosticTracker.onTagQueued()
           if(result?.isFailure == true) showLog("scanChannel_dropped", "Tag dropped — channel full")
         /*if(chkNull(topic,TopicConstants.INVENTORY).equals(TopicConstants.INVENTORY)) tagBuffer.send(tagInfo)
        else *///saveToDB(tagInfo, chkNull(topic,TopicConstants.INVENTORY),isPublishToMqtt && !isUnencoded && !isAlien)
@@ -2058,6 +2080,7 @@ abstract class RFIDHandler {
       if(isMaxScanLimitReached) return
       showLog("method","saveToDB_insert")
       showLog("isActionInventory_saveToDB_insert1",""+isActionInventory)
+      val dbStartMs = System.currentTimeMillis()
       val insertedRowIds = db.tagInfoDao().insertAll(tagInfoEntities).filter { l->l>0 }
       //val newlyInserted = insertedRowIds.count { rowId -> rowId > 0 }
       val insertedTags = tagInfoEntities.filterIndexed { i, _ -> insertedRowIds.getOrElse(i) { -1L } > 0 }
@@ -2065,6 +2088,8 @@ abstract class RFIDHandler {
       showLog("saveToDB_result",""+newlyInserted)
       if(newlyInserted <= 0) return
       confirmedDbCount += newlyInserted
+      RfidDiagnosticTracker.knownUnreadFound = confirmedDbCount
+      RfidDiagnosticTracker.onDbInserted(newlyInserted, System.currentTimeMillis() - dbStartMs)
      /* showLog("saveToDB_topic_isPostToMqtt",topic+"_"+isPostToMqtt)
       if(topic.equals(TopicConstants.INVENTORY) && isPostToMqtt) {
         publishInventoryToMqtt(db.tagInfoDao().getNonUploadedForBackgroundUpload(topic, sessionType, transactionType, deviceSessionId))

@@ -10,6 +10,7 @@ import com.itek.rftaar.CommonActivity
 import com.itek.rftaar.R
 import com.itek.rftaar.core.database.DataStoreManager
 import com.itek.rftaar.data.entity.TagInfoEntity
+import com.itek.rftaar.diagnostics.RfidDiagnosticTracker
 import com.itek.rftaar.mqtt.constants.TopicConstants
 import com.itek.rftaar.reader.RFIDHandler
 import com.itek.rftaar.reader.constants.ReaderConstants
@@ -278,8 +279,12 @@ class ChainwayRFIDHandler(context: CommonActivity, errMsg: MutableLiveData<Strin
       gen2Entity.queryTarget = inventoried
       gen2Entity.querySession = seesionid
       if (setGen2(gen2Entity)) {
+        RfidDiagnosticTracker.inventorySession = session
+        RfidDiagnosticTracker.inventoryTarget = invType
+        // TODO: Chainway SDK Q/dynamic-Q/module-temperature fields are optional; keep empty/-1 when unavailable.
         //showLog(TAG + " SET_SESSION_" + session + "_INV_TYPE_" + invType, "SET")
       } else {
+        RfidDiagnosticTracker.onSdkError("chainway_set_gen2_failed")
         //showLog(TAG + " SET_SESSION_" + session + "_INV_TYPE_" + invType, "FAIL")
       }
     } else {
@@ -321,7 +326,9 @@ class ChainwayRFIDHandler(context: CommonActivity, errMsg: MutableLiveData<Strin
   }
 
   private fun initReader(): Boolean {
-    return if (reader != null) reader!!.init(context) else if (mReader != null) mReader.init(context) else false
+    val result = if (reader != null) reader!!.init(context) else if (mReader != null) mReader.init(context) else false
+    if (!result) RfidDiagnosticTracker.onSdkError("chainway_init_failed")
+    return result
   }
 
   private fun getGen2(): Gen2Entity? {
@@ -341,8 +348,15 @@ class ChainwayRFIDHandler(context: CommonActivity, errMsg: MutableLiveData<Strin
   override fun setPower(power: Int) {
       showLog("SetPower:",""+power)
 
-      if (reader != null && reader?.setPower(power) == true) readerPower.postValue(power)
-      else if (mReader != null && mReader.setPower(power)) readerPower.postValue(power)
+      if (reader != null && reader?.setPower(power) == true) {
+        readerPower.postValue(power)
+        RfidDiagnosticTracker.rfPowerDbm = power.toString()
+      }
+      else if (mReader != null && mReader.setPower(power)) {
+        readerPower.postValue(power)
+        RfidDiagnosticTracker.rfPowerDbm = power.toString()
+      }
+      else RfidDiagnosticTracker.onSdkError("chainway_set_power_failed")
       showLog("SetPower 1:",""+power)
   }
 
@@ -402,9 +416,11 @@ class ChainwayRFIDHandler(context: CommonActivity, errMsg: MutableLiveData<Strin
     inventoryParameter = InventoryParameter()
     inventoryParameter.setResultData(InventoryParameter.ResultData().setNeedPhase(true))
     }**/
-    return  if (reader != null) reader!!.startInventoryTag()
+    val result =  if (reader != null) reader!!.startInventoryTag()
     else if (mReader != null) mReader.startInventoryTag()
     else false
+    if (!result) RfidDiagnosticTracker.onSdkError("chainway_start_inventory_failed")
+    return result
   }
 
   private fun startSearch(inventoryParameter: InventoryParameter):Boolean {
