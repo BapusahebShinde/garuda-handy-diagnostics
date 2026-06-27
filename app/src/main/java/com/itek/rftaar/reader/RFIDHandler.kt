@@ -654,7 +654,6 @@ abstract class RFIDHandler {
       RfidDiagnosticTracker.inventorySession = sessionType
       RfidDiagnosticTracker.inventoryTarget = transactionType
       RfidDiagnosticTracker.readerConnected = isConnected()
-      RfidDiagnosticTracker.knownUnreadExpected = maxScanLimit
       DiagnosticLogger.start(context)
       val result= setupInventory(invPower = resolvedPower, readTid)
       showLog("setupInventory",""+result)
@@ -2088,7 +2087,6 @@ abstract class RFIDHandler {
       showLog("saveToDB_result",""+newlyInserted)
       if(newlyInserted <= 0) return
       confirmedDbCount += newlyInserted
-      RfidDiagnosticTracker.knownUnreadFound = confirmedDbCount
       RfidDiagnosticTracker.onDbInserted(newlyInserted, System.currentTimeMillis() - dbStartMs)
      /* showLog("saveToDB_topic_isPostToMqtt",topic+"_"+isPostToMqtt)
       if(topic.equals(TopicConstants.INVENTORY) && isPostToMqtt) {

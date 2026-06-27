@@ -1749,12 +1749,8 @@ object MqttManager {
           payload = message.toByteArray()
           qos = 1
         }
-        val publishResult: IMqttDeliveryToken = mqttClient.publish(topic, mqttMessage)
-        FileUtils.writeMqttLog(serverUrl = mqttClient.serverURI, topic = topic+"_publish", message = message)
-        showToast("publishResult:" + topic + publishResult.message)
-        //LogUtils.showLog("MQTT_PublishResult", "publish: " + topic + publishResult.message)
-        // Assign a listener to this specific token
-        publishResult.setActionCallback(object : IMqttActionListener {
+        try {
+          val publishResult: IMqttDeliveryToken = mqttClient.publish(topic, mqttMessage, null, object : IMqttActionListener {
               override fun onSuccess(asyncActionToken: IMqttToken) {
                   // PUBACK received successfully
                   MqttDiagnosticTracker.onPublishSuccess(System.currentTimeMillis() - publishStartMs)
@@ -1767,7 +1763,13 @@ object MqttManager {
                   MqttDiagnosticTracker.onPublishFailure(exception.message, System.currentTimeMillis() - publishStartMs)
                   showLog("MQTT_PublishResult", "Publish Failed: " + exception.message)
               }
-        })
+          })
+          FileUtils.writeMqttLog(serverUrl = mqttClient.serverURI, topic = topic+"_publish", message = message)
+          showToast("publishResult:" + topic + publishResult.message)
+        } catch (e: Exception) {
+          MqttDiagnosticTracker.onPublishFailure(e.message, System.currentTimeMillis() - publishStartMs)
+          throw e
+        }
       }
     }
   }

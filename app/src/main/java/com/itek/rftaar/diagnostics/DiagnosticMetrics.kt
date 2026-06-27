@@ -14,9 +14,9 @@ object RfidDiagnosticTracker {
   private val insertedTags = AtomicLong(0)
   private val dbLastFlushMs = AtomicLong(0)
   private val rssiCount = AtomicLong(0)
-  private val rssiTotal = AtomicLong(0)
-  private val rssiMin = AtomicLong(Long.MAX_VALUE)
-  private val rssiMax = AtomicLong(Long.MIN_VALUE)
+  private val rssiTotalMilli = AtomicLong(0)
+  private val rssiMinMilli = AtomicLong(Long.MAX_VALUE)
+  private val rssiMaxMilli = AtomicLong(Long.MIN_VALUE)
   private val sdkErrors = AtomicLong(0)
   private val sdkWarnings = AtomicLong(0)
   @Volatile var sdkLastError: String = ""
@@ -31,25 +31,28 @@ object RfidDiagnosticTracker {
   @Volatile var uhfModuleTempC: Double = -1.0
   @Volatile var knownUnreadExpected: Int = -1
   @Volatile var knownUnreadFound: Int = -1
+  @Volatile private var lastCallbackMs: Long = 0
 
   fun reset() {
     seenEpcs.clear(); rawCallbacks.set(0); duplicateCallbacks.set(0); uniqueEpcs.set(0)
     callbackTotalNanos.set(0); callbackMaxNanos.set(0); queuedTags.set(0); insertedTags.set(0); dbLastFlushMs.set(0)
-    rssiCount.set(0); rssiTotal.set(0); rssiMin.set(Long.MAX_VALUE); rssiMax.set(Long.MIN_VALUE)
+    rssiCount.set(0); rssiTotalMilli.set(0); rssiMinMilli.set(Long.MAX_VALUE); rssiMaxMilli.set(Long.MIN_VALUE)
     sdkErrors.set(0); sdkWarnings.set(0); sdkLastError = ""; knownUnreadExpected = -1; knownUnreadFound = -1
     inventoryRunning = false; readerConnected = false; rfPowerDbm = ""; inventorySession = ""; inventoryTarget = ""
-    qValue = ""; dynamicQEnabled = ""; antennaState = ""; uhfModuleTempC = -1.0
+    qValue = ""; dynamicQEnabled = ""; antennaState = ""; uhfModuleTempC = -1.0; lastCallbackMs = 0
   }
 
   fun onCallback(epc: String?, rssi: String?, elapsedNanos: Long) {
     rawCallbacks.incrementAndGet()
+    lastCallbackMs = System.currentTimeMillis()
     callbackTotalNanos.addAndGet(elapsedNanos.coerceAtLeast(0))
     updateMax(callbackMaxNanos, elapsedNanos.coerceAtLeast(0))
     if (!epc.isNullOrEmpty()) {
       if (seenEpcs.add(epc)) uniqueEpcs.incrementAndGet() else duplicateCallbacks.incrementAndGet()
     }
-    rssi?.trim()?.toLongOrNull()?.let {
-      rssiCount.incrementAndGet(); rssiTotal.addAndGet(it); updateMin(rssiMin, it); updateMax(rssiMax, it)
+    rssi?.trim()?.toDoubleOrNull()?.let {
+      val milli = (it * 1000.0).toLong()
+      rssiCount.incrementAndGet(); rssiTotalMilli.addAndGet(milli); updateMin(rssiMinMilli, milli); updateMax(rssiMaxMilli, milli)
     }
   }
 
@@ -57,6 +60,7 @@ object RfidDiagnosticTracker {
   fun onDbInserted(count: Int, durationMs: Long) { insertedTags.addAndGet(count.toLong()); dbLastFlushMs.set(durationMs.coerceAtLeast(0)) }
   fun onSdkError(message: String) { sdkErrors.incrementAndGet(); sdkLastError = message }
   fun onSdkWarning() { sdkWarnings.incrementAndGet() }
+  fun setKnownUnread(expected: Int, found: Int) { knownUnreadExpected = expected; knownUnreadFound = found }
 
   fun snapshot(): RfidMetrics {
     val raw = rawCallbacks.get()
@@ -68,28 +72,29 @@ object RfidDiagnosticTracker {
       uniqueEpcsTotal = uniqueEpcs.get(),
       callbackAvgMs = if (raw > 0) callbackTotalNanos.get() / raw / 1_000_000.0 else 0.0,
       callbackMaxMs = callbackMaxNanos.get() / 1_000_000.0,
-      callbackQueueDepth = (queuedTags.get() - insertedTags.get()).coerceAtLeast(0).toInt(),
-      avgRssi = if (rssiN > 0) rssiTotal.get().toDouble() / rssiN else 0.0,
-      minRssi = rssiMin.get().takeIf { it != Long.MAX_VALUE }?.toDouble() ?: 0.0,
-      maxRssi = rssiMax.get().takeIf { it != Long.MIN_VALUE }?.toDouble() ?: 0.0,
+      callbackQueueDepth = 0,
+      avgRssi = if (rssiN > 0) (rssiTotalMilli.get().toDouble() / rssiN) / 1000.0 else Double.NaN,
+      minRssi = rssiMinMilli.get().takeIf { it != Long.MAX_VALUE }?.let { it / 1000.0 } ?: Double.NaN,
+      maxRssi = rssiMaxMilli.get().takeIf { it != Long.MIN_VALUE }?.let { it / 1000.0 } ?: Double.NaN,
       uhfModuleTempC = uhfModuleTempC,
       rfPowerDbm = rfPowerDbm,
       inventorySession = inventorySession,
       inventoryTarget = inventoryTarget,
       qValue = qValue,
       dynamicQEnabled = dynamicQEnabled,
-      antennaState = antennaState,
-      readerConnected = readerConnected,
+      antennaState = if (!readerConnected && hasRecentCallbacks()) "ACTIVE_OR_CALLBACKS_RECEIVED" else antennaState,
+      readerConnected = readerConnected || hasRecentCallbacks(),
       sdkErrorCount = sdkErrors.get(),
       sdkLastError = sdkLastError,
       sdkWarningCount = sdkWarnings.get(),
-      dbPendingQueue = (queuedTags.get() - insertedTags.get()).coerceAtLeast(0).toInt(),
+      dbPendingQueue = 0,
       dbLastFlushMs = dbLastFlushMs.get(),
       knownUnreadExpected = knownUnreadExpected,
       knownUnreadFound = knownUnreadFound
     )
   }
 
+  private fun hasRecentCallbacks(): Boolean = lastCallbackMs > 0 && System.currentTimeMillis() - lastCallbackMs <= 10_000
   private fun updateMax(target: AtomicLong, value: Long) { while (true) { val old = target.get(); if (value <= old || target.compareAndSet(old, value)) return } }
   private fun updateMin(target: AtomicLong, value: Long) { while (true) { val old = target.get(); if (value >= old || target.compareAndSet(old, value)) return } }
 }
