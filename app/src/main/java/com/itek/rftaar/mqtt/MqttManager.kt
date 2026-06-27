@@ -21,6 +21,7 @@ import com.itek.rftaar.core.database.DataStoreManager
 import com.itek.rftaar.data.dao.TagInfoDao
 import com.itek.rftaar.data.entity.SearchLogEntity
 import com.itek.rftaar.data.entity.TagInfoEntity
+import com.itek.rftaar.diagnostics.MqttDiagnosticTracker
 import com.itek.rftaar.domain.APIBackGroundCall
 import com.itek.rftaar.mqtt.constants.TopicConstants
 import com.itek.rftaar.presentation.navigation.Screen
@@ -79,6 +80,8 @@ object MqttManager {
     try {
       //mqttClient = MqttAsyncClient(serverUrl.trim(), clientId, MemoryPersistence(), pingSender)
       mqttClient = MqttAsyncClient(serverUrl.trim(), clientId, MemoryPersistence())
+      MqttDiagnosticTracker.brokerHost = serverUrl.trim()
+      MqttDiagnosticTracker.clientId = clientId
     }
     catch (e: Exception) {
       e.printStackTrace()
@@ -254,6 +257,7 @@ object MqttManager {
                   isConnecting = false
                   _isConnected.value = true
                   _connectionStatus.value = "Connected"
+                  MqttDiagnosticTracker.onConnected(_connectionStatus.value, mqttClient.serverURI ?: "")
                   /*if(serverUrl.isNotEmpty()) {
           DataStoreManager.saveToPreferences(ParameterConstants.BROKER_URL,serverUrl)
           //showSuccess
@@ -272,6 +276,7 @@ object MqttManager {
                   isConnecting = false
                   _isConnected.value = false
                   _connectionStatus.value = "Failed to connect"
+                  MqttDiagnosticTracker.onDisconnected(_connectionStatus.value, exception?.message)
                   /*if(serverUrl.isNotEmpty()) {
           //showFail
         }*/
@@ -292,11 +297,13 @@ object MqttManager {
       override fun connectionLost(cause: Throwable?) {
         _isConnected.value = false
         _connectionStatus.value = "Connection lost"
+        MqttDiagnosticTracker.onDisconnected(_connectionStatus.value, cause?.message)
         showToast("Connection lost")
         connect()
       }
 
       override fun messageArrived(topic1: String?, message: MqttMessage?) {
+        MqttDiagnosticTracker.onMessageArrived()
         processMessageUpdate(topic1,message?.toString())
         /*showLog("MQTT_Published", "Message arrived on topic: $topic1")
         if(topic1.isNullOrEmpty()) return
@@ -950,6 +957,7 @@ object MqttManager {
         override fun onSuccess(asyncActionToken: IMqttToken?) {
           _isConnected.value = false
           _connectionStatus.value = "Disconnected"
+          MqttDiagnosticTracker.onDisconnected(_connectionStatus.value)
           showToast("Disconnected")
           FileUtils.writeMqttLog(
            serverUrl = mqttClient.serverURI,
@@ -1704,14 +1712,19 @@ object MqttManager {
 
   @SuppressLint("StaticFieldLeak")
   fun publish(topic: String, message: String) {
-    if(topic.isNullOrEmpty())  return
+    if(topic.isNullOrEmpty())  {
+      MqttDiagnosticTracker.onDroppedMessage()
+      return
+    }
     showLog("MQTT_method","publish=>"+topic+"_"+isConnected())
     when {
       !isInitialized()-> {
+          MqttDiagnosticTracker.onPublishFailure("client_not_initialized")
           initialize(appContext,DataStoreManager.readFromPreferences(ParameterConstants.BROKER_URL,"").trim());
           showToast("Not initialized to MQTT broker")
       }
       !isConnected() -> {
+        MqttDiagnosticTracker.onPublishFailure("client_not_connected")
         connect()
         showToast("Not connected to MQTT broker")
         //Toast.makeText(appContext, "Not connected to MQTT broker", Toast.LENGTH_SHORT).show()
@@ -1723,33 +1736,40 @@ object MqttManager {
       }
 
       message.isEmpty() -> {
+        MqttDiagnosticTracker.onPublishFailure("empty_message")
         showToast("Message cannot be empty")
       }
 
       else -> {
+        val publishStartMs = System.currentTimeMillis()
+        MqttDiagnosticTracker.onPublishAttempt()
         showToast("Publish topic: "+topic)
         showToast("Publish Message:"+message)
         val mqttMessage = MqttMessage().apply {
           payload = message.toByteArray()
           qos = 1
         }
-        val publishResult: IMqttDeliveryToken = mqttClient.publish(topic, mqttMessage)
-        FileUtils.writeMqttLog(serverUrl = mqttClient.serverURI, topic = topic+"_publish", message = message)
-        showToast("publishResult:" + topic + publishResult.message)
-        //LogUtils.showLog("MQTT_PublishResult", "publish: " + topic + publishResult.message)
-        // Assign a listener to this specific token
-        publishResult.setActionCallback(object : IMqttActionListener {
+        try {
+          val publishResult: IMqttDeliveryToken = mqttClient.publish(topic, mqttMessage, null, object : IMqttActionListener {
               override fun onSuccess(asyncActionToken: IMqttToken) {
                   // PUBACK received successfully
+                  MqttDiagnosticTracker.onPublishSuccess(System.currentTimeMillis() - publishStartMs)
                   showLog("MQTT_PublishResult", "Publish Successful! Packet ID: " + asyncActionToken.getMessageId())
                   processMessageUpdate(topic,message,true)
               }
 
               override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable) {
                   // Broker failed to respond, or connection dropped
+                  MqttDiagnosticTracker.onPublishFailure(exception.message, System.currentTimeMillis() - publishStartMs)
                   showLog("MQTT_PublishResult", "Publish Failed: " + exception.message)
               }
-        })
+          })
+          FileUtils.writeMqttLog(serverUrl = mqttClient.serverURI, topic = topic+"_publish", message = message)
+          showToast("publishResult:" + topic + publishResult.message)
+        } catch (e: Exception) {
+          MqttDiagnosticTracker.onPublishFailure(e.message, System.currentTimeMillis() - publishStartMs)
+          throw e
+        }
       }
     }
   }
