@@ -1,0 +1,30 @@
+{
+	"message": "Data fetched Successfully.....",
+	"data": [
+		{
+			"sessionId": "95e7983c-e373-46b3-8a43-3ee15dc324f2",
+			"searchTypeId": "b5fac2ef-1b17-4f62-ba55-bd6d004a5e15aa3c9d71-c2c3-499d-820a-a1f0e5508c94",
+			"searchMasterId": "b5fac2ef-1b17-4f62-ba55-bd6d004a5e15",
+			"childSearchMasterId": "aa3c9d71-c2c3-499d-820a-a1f0e5508c94",
+			"referenceNumber": "List Based Search - GRDC Search-21Apr2026092113",
+			"status": "PENDING",
+			"qty": 20,
+			"createdAt": "2026-04-21T09:21:13.707Z",
+			"expiredAt": "2026-06-21T09:21:13.535Z",
+			"searchTypeName": "List Based Search",
+			"childSearchTypeName": "GRDC Search"
+		},{
+			"sessionId": "bca67bfb-d069-451d-b228-c4d036ee750c",
+			"searchTypeId": "a8869642-a8ee-4384-9524-f2c54f71f5ef24ea5aae-32d5-4c72-afed-150926f40823",
+			"searchMasterId": "a8869642-a8ee-4384-9524-f2c54f71f5ef",
+			"childSearchMasterId": "24ea5aae-32d5-4c72-afed-150926f40823",
+			"referenceNumber": "List Based Search - Pick List Search-24Apr2026090746",
+			"status": "PENDING",
+			"qty": 13,
+			"createdAt": "2026-04-24T09:07:46.328Z",
+			"expiredAt": "2026-05-24T09:07:46.280Z",
+			"searchTypeName": "List Based Search",
+			"childSearchTypeName": "Pick List Search"
+		}
+	]
+}

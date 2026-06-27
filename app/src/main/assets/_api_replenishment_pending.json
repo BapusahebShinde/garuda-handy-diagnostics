@@ -1,0 +1,124 @@
+{
+	"success": true,
+	"headers": [
+		"ean",
+		"Article2",
+		"Product Name",
+		"Unit of Measarment",
+		"Images",
+		"Division name",
+		"Segment",
+		"family",
+		"article_class",
+		"Brand",
+		"Style",
+		"color"
+	],
+	"data": [
+		{
+			"destinationLocationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/42f4fd0e-9fda-4805-a1a1-fe907bfcb6b0",
+			"destinationLocationName": "FOH",
+			"qty": 3,
+			"ean": "B-132415",
+			"Article2": "A2976",
+			"Product Name": "443028551 OFF WHITE(RP)",
+			"Unit of Measarment": "",
+			"Images": [
+				"WOVEN",
+				"TOPS"
+			],
+			"Division name": "Womens Westernwear",
+			"Segment": "WOMENS WEAR",
+			"family": "WESTERN WEAR",
+			"article_class": "TOPS",
+			"Brand": "Fig",
+			"Style": "TS24FWWWFG5535",
+			"color": "OFF WHITE",
+			"errMsg": ""
+		},
+		{
+			"destinationLocationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/8bf62858-1e09-42dd-8260-9a39fb3d6042",
+			"destinationLocationName": "FOH-Test",
+			"qty": 5,
+			"ean": "B-132415",
+			"Article2": "A2976",
+			"Product Name": "443028551 OFF WHITE(RP)",
+			"Unit of Measarment": "",
+			"Images": [
+				"WOVEN",
+				"TOPS"
+			],
+			"Division name": "Womens Westernwear",
+			"Segment": "WOMENS WEAR",
+			"family": "WESTERN WEAR",
+			"article_class": "TOPS",
+			"Brand": "Fig",
+			"Style": "TS24FWWWFG5535",
+			"color": "OFF WHITE",
+			"errMsg": "Insufficient stock"
+		},
+        {
+			"destinationLocationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/42f4fd0e-9fda-4805-a1a1-fe907bfcb6b0",
+			"destinationLocationName": "FOH",
+			"qty": 2,
+			"ean": "B-1324151",
+			"Article2": "A29761",
+			"Product Name": "443028551 OFF WHITE(RP)",
+			"Unit of Measarment": "",
+			"Images": [
+				"WOVEN",
+				"TOPS"
+			],
+			"Division name": "Womens Westernwear-1",
+			"Segment": "WOMENS WEAR-1",
+			"family": "WESTERN WEAR-1",
+			"article_class": "TOPS-1",
+			"Brand": "Fig-1",
+			"Style": "TS24FWWWFG5535",
+			"color": "OFF WHITE",
+			"errMsg": ""
+		},
+		{
+			"destinationLocationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/8bf62858-1e09-42dd-8260-9a39fb3d6042",
+			"destinationLocationName": "FOH-Test",
+			"qty": 5,
+			"ean": "B-1324151",
+			"Article2": "A29761",
+			"Product Name": "443028551 OFF WHITE(RP)",
+			"Unit of Measarment": "",
+			"Images": [
+				"WOVEN",
+				"TOPS"
+			],
+			"Division name": "Womens Westernwear-1",
+			"Segment": "WOMENS WEAR-1",
+			"family": "WESTERN WEAR-1",
+			"article_class": "TOPS-1",
+			"Brand": "Fig-1",
+			"Style": "TS24FWWWFG5535",
+			"color": "OFF WHITE",
+			"errMsg": "Insufficient stock"
+		},
+        {
+			"destinationLocationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/8bf62858-1e09-42dd-8260-9a39fb3d6042",
+			"destinationLocationName": "FOH-Test",
+			"qty": 5,
+			"ean": "B-1324152",
+			"Article2": "A2976-2",
+			"Product Name": "443028551 OFF WHITE(RP)",
+			"Unit of Measarment": "",
+			"Images": [
+				"WOVEN",
+				"TOPS"
+			],
+			"Division name": "Womens Westernwear",
+			"Segment": "WOMENS WEAR",
+			"family": "WESTERN WEAR",
+			"article_class": "TOPS",
+			"Brand": "Fig",
+			"Style": "TS24FWWWFG5535",
+			"color": "OFF WHITE-2",
+			"errMsg": "Insufficient stock"
+		}
+	]
+}

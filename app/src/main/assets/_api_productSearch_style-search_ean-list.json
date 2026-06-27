@@ -1,0 +1,49 @@
+{
+	"data": [
+		{
+			"assetLocationPath": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/42f4fd0e-9fda-4805-a1a1-fe907bfcb6b0",
+			"assetLocationName": "FOH",
+			"stockQty": 3,
+			"ean": "B-132415",
+			"displayValueStyleParameter1": "Fig",
+			"Style Code": "TS24FWWWFG5535",
+			"displayValueStyleParameter2": "OFF WHITE"
+		},
+		{
+			"assetLocationPath": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/8bf62858-1e09-42dd-8260-9a39fb3d6042",
+			"assetLocationName": "FOH-Test",
+			"stockQty": 1,
+			"ean": "B-1324151",
+			"displayValueStyleParameter1": "Fig1",
+			"Style Code": "TS24FWWWFG55352",
+			"displayValueStyleParameter2": "OFF WHITE1"
+		},
+		{
+			"assetLocationPath": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/8bf62858-1e09-42dd-8260-9a39fb3d6042",
+			"assetLocationName": "FOH-Test",
+			"stockQty": 5,
+			"ean": "B-1324152",
+			"displayValueStyleParameter1": "Fig2",
+			"Style Code": "TS24FWWWFG55353",
+			"displayValueStyleParameter2": "OFF WHITE2"
+		},
+		{
+			"assetLocationPath": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/8bf62858-1e09-42dd-8260-9a39fb3d6042",
+			"assetLocationName": "FOH-Test",
+			"stockQty": 7,
+			"ean": "B-1324153",
+			"displayValueStyleParameter1": "Fig3",
+			"Style Code": "TS24FWWWFG55353",
+			"displayValueStyleParameter2": "OFF WHITE3"
+		},
+		{
+			"assetLocationPath": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/81fcf660-0696-4283-8d65-b5a554472b6d/1512624c-2dd7-45af-b8a7-5328e032d1bd/8bf62858-1e09-42dd-8260-9a39fb3d6042",
+			"assetLocationName": "FOH-Test",
+			"stockQty": 10,
+			"ean": "B-1324154",
+			"displayValueStyleParameter1": "Fig4",
+			"Style Code": "TS24FWWWFG55354",
+			"displayValueStyleParameter2": "OFF WHITE4"
+		}
+	]
+}

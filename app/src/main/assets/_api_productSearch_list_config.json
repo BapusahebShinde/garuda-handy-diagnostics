@@ -1,0 +1,38 @@
+{
+	"message": "Data fetched Successfully.....",
+	"data": {
+		"id": "b5fac2ef-1b17-4f62-ba55-bd6d004a5e15aa3c9d71-c2c3-499d-820a-a1f0e5508c94",
+		"customerId": "f0f91964-b310-4f3e-9cd7-09c633299cae",
+		"searchMasterId": "b5fac2ef-1b17-4f62-ba55-bd6d004a5e15",
+		"childSearchMasterId": "aa3c9d71-c2c3-499d-820a-a1f0e5508c94",
+		"name": "List Based Search - GRDC Search",
+		"searchvalue": "barcode",
+		"hasReferenceNumber": false,
+		"referenceType": "",
+		"referenceNumberLabel": "",
+		"allocateOnDevice": true,
+		"enablePick": false,
+		"expiryAfterTime": 1,
+		"onlyOneActiveAtTime": true,
+		"headers": [
+			{
+				"name": "barcode",
+				"label": "EAN No.",
+				"dataType": "string"
+			},
+			{
+				"name": "locationCode",
+				"label": "Loc",
+				"dataType": "string"
+			},
+			{
+				"name": "qty",
+				"label": "Qty",
+				"dataType": "number"
+			}
+		],
+		"isActive": true,
+		"createdAt": "2026-04-21T06:09:58.265Z",
+		"updatedAt": "2026-04-21T06:09:58.265Z"
+	}
+}

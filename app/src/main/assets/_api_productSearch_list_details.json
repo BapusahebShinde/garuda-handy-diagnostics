@@ -1,0 +1,102 @@
+{
+  "message": "Data fetched Successfully..",
+  "data": {
+    "customerId": "f0f91964-b310-4f3e-9cd7-09c633299cae",
+    "locationId": "a6135d26-2335-42bd-80fb-1919d8cb1069",
+    "searchTypeId": "b5fac2ef-1b17-4f62-ba55-bd6d004a5e15aa3c9d71-c2c3-499d-820a-a1f0e5508c94",
+    "searchValue": "barcode",
+    "referenceNumber": "",
+    "data": [
+      {
+        "barcode": "ABCD-5",
+        "productInfo": {},
+        "qty": {
+          "requestedQty": 10,
+          "availableQty": 0,
+          "searchQty": 0,
+          "pickedQty": 0,
+          "decodedQty": 0,
+          "locationQty": []
+        }
+      },
+      {
+        "barcode": "8905709008048",
+        "productInfo": {
+          "EAN": "8905709008048",
+          "Article Code": "441697574005",
+          "Description": "AW22PUL9907CAMEL, LT. KHAKI, XL",
+          "Sizes": "XL",
+          "Image": [
+            "https://retailtest.itekrfid.com/zudio/Stores/Storesproductimage/8903135516670.jpeg"
+          ],
+          "Category": "WOMENS WEAR",
+          "Brand": "RUKOTINA",
+          "Division Name": "Womens Westernwear",
+          "Family": "WESTERN WEAR",
+          "Class": "WINTER WEAR",
+          "MC Desc": "PULLOVERS",
+          "Style Code": "AW22PUL9907CAMEL",
+          "Colors": "LT. KHAKI",
+          "ean": "8905709008048"
+        },
+        "qty": {
+          "requestedQty": 3,
+          "availableQty": 30,
+          "message": "",
+          "searchQty": 0,
+          "pickedQty": 0,
+          "decodedQty": 0,
+          "locationQty": [
+            {
+              "locationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/60e1d50c-ebb2-4d8c-88e6-ffa3a6580b4e/c0cbd70d-d155-4ef7-954e-749613cbd2bc/c9d7590f-fa23-45b3-bb3b-b1417d8695a8/c1157d1f-86f1-4a9d-90b7-357e2be04c5c",
+              "locationName": "BOH-1",
+              "qty": 27
+            },
+            {
+              "locationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/60e1d50c-ebb2-4d8c-88e6-ffa3a6580b4e/c0cbd70d-d155-4ef7-954e-749613cbd2bc/c9d7590f-fa23-45b3-bb3b-b1417d8695a8/712a4b54-6b17-47f0-9690-9db8d4f885b3",
+              "locationName": "BOH-2",
+              "qty": 2
+            },
+            {
+              "locationId": "a3556ec2-647e-4736-98e4-f6de7e833dc2/2ebaad75-cd6c-4e28-9f89-4946d33f6017/60e1d50c-ebb2-4d8c-88e6-ffa3a6580b4e/c0cbd70d-d155-4ef7-954e-749613cbd2bc/c9d7590f-fa23-45b3-bb3b-b1417d8695a8/076a7eb7-4437-47e4-be03-0e9f17256756",
+              "locationName": "FOH-1",
+              "qty": 1
+            }
+          ]
+        }
+      },
+      {
+        "barcode": "8904356411966",
+        "productInfo": {
+          "EAN No.": "8904356411966",
+          "Article Code": "441157386004",
+          "Article Description": "AW-20-BSC 112B, BLACK, 2XL",
+          "Sizes": "2XL",
+          "Division Name": "Womens Westernwear",
+          "Brand Desc.": "RUKOTINA",
+          "Family": "WESTERN WEAR",
+          "Class": "WINTER WEAR",
+          "MC. Desc": "PULLOVERS",
+          "Product Group": "INDIANWEAR",
+          "Style Code": "AW-20-BSC 112B",
+          "Colors": "BLACK",
+          "ean": "8904356411966"
+        },
+        "qty": {
+          "requestedQty": 10,
+          "availableQty": 2,
+          "searchQty": 0,
+          "pickedQty": 0,
+          "decodedQty": 0,
+          "locationQty": [
+            {
+              "locationId": "19c4de7d-46cf-4288-b23b-b378a6b14795/b204d0c7-c47e-4763-aec1-ea3288613ec8/10c44825-969a-43b0-be25-365f9ffd7d2c/526d0237-5a6a-49a9-9ee2-a398d8cfa269/4762ce8d-5463-4155-af6e-5825ba627780/83e3f371-e0db-4c91-840a-9b4b9860df4f/a6135d26-2335-42bd-80fb-1919d8cb1069/0d77d1a5-7dbc-48f5-8629-a5af89274ec2",
+              "locationName": "Floor-1",
+              "qty": 2
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

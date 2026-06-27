@@ -1,0 +1,16 @@
+{
+	"data": {
+		"pendingQty": 21,
+		"completedTodayQty": 0,
+		"inProcessTodayCount" : 3,
+		"bucket": {
+			"belowRange": "1",
+			"withinRange": "2-4",
+			"aboveRange": "5",
+			"belowRangeQty": 0,
+			"withinRangeQty": 0,
+			"aboveRangeQty": 21
+		}
+	},
+	"error": ""
+}
